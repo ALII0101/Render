@@ -1,0 +1,50 @@
+#Compara   Django vs Flask
+farmework  big       mini 
+tools      all       just(templates & routes)-install what you want
+project    huge      mini 
+
+--->virtualenv in Django-Flask
+
+#pip install virtualenv (just-updating-if you installed it before)
+                        install in your device(Global) not only in this file
+#virtualenv venv(file-name) 
+ venv\Scripts\activate 
+  pip install flask (in first-time)
+  pip freeze + copy-pest in requierments file
+
+----> make app.py (for routs,functions)  
+                    must function after routs to use it 
+
+----> to run 
+            flask --app app(file-name) run -->(fixed-run= not change if edit in code)
+            flask --app app(file-name) run --reload (to changes in page whe change code)
+
+----> get-method=use to post data from servers & it is a default methods
+----> post = use to send data to server
+
+#postman-extension --> to send api requiests
+
+# from 
+        pip install Flask-wtf ----> wtf = web-form-toolkit
+
+#Middle wear(mediator to connect data-base (like orm in django))
+          pip install sqlalchemy
+          
+          pip install flask-migrate
+          flask db init (to make migrations-file) (once-time)
+          flask db migrate -m 'initia migration' (make migrations(migrate))
+          flask db upgrade (create data-base file)
+
+
+
+#use sqlite-viewer ---> to show the data-base
+
+
+Read-carefully <-------------------------
+#put method to update sumthing in database
+#post to insert new data in database
+#get to get data from database
+#delete to delete data from database
+
+Don't forget to  use put,pust,get,delete in postman  & preview instead of prettey
+                and body isntead of params--> raw --> json <--------( in put only ) 
