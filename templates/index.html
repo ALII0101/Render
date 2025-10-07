@@ -1,0 +1,357 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Restaurant Menu</h1>
+            <button class="btn btn-primary" onclick="openModal()">Add New Item</button>
+        </header>
+
+        <div class="menu-items" id="menuItems">
+
+        </div>
+    </div>
+
+
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Add New Item</h2>
+            <form id="itemForm">
+                <input type="hidden" id="itemId">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price:</label>
+                    <input type="number" id="price" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <span>Restaurant Pro</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-section="menu">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span>Menu Management</span>
+                </a>
+                <a href="#" class="nav-item" data-section="categories">
+                    <i class="fas fa-tags"></i>
+                    <span>Categories</span>
+                </a>
+                <a href="#" class="nav-item" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item" data-section="database">
+                    <i class="fas fa-database"></i>
+                    <span>Database Info</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 id="pageTitle">Menu Management</h1>
+                    <p id="pageDescription">Manage your restaurant menu items</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" onclick="openModal()">
+                        <i class="fas fa-plus"></i>
+                        Add New Item
+                    </button>
+                </div>
+            </header>
+
+            <!-- Menu Management Section (Default) -->
+            <div id="menuSection" class="section active">
+                <!-- Controls -->
+                <div class="controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search menu items...">
+                    </div>
+                    <div class="filter-controls">
+                        <select id="categoryFilter" class="filter-select">
+                            <option value="all">All Categories</option>
+                        </select>
+                        <select id="availabilityFilter" class="filter-select">
+                            <option value="all">All Items</option>
+                            <option value="available">Available Only</option>
+                            <option value="unavailable">Unavailable Only</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="app.refreshData()">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Menu Items Grid -->
+                <div class="menu-grid" id="menuItems">
+                    <!-- Items will be loaded here -->
+                </div>
+
+                <!-- Statistics -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalItems">0</h3>
+                            <p>Total Items</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon available">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="availableItems">0</h3>
+                            <p>Available</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon unavailable">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="unavailableItems">0</h3>
+                            <p>Unavailable</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon categories">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalCategories">0</h3>
+                            <p>Categories</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Section -->
+            <div id="categoriesSection" class="section">
+                <div class="section-header">
+                    <h2>Menu Categories</h2>
+                    <p>Manage your menu categories and distribution</p>
+                </div>
+                <div class="categories-grid" id="categoriesGrid">
+                    <!-- Categories will be loaded here automatically -->
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analyticsSection" class="section">
+                <div class="section-header">
+                    <h2>Business Analytics</h2>
+                    <p>Track your restaurant performance and sales</p>
+                </div>
+
+                <!-- Overview Stats -->
+                <div class="analytics-overview">
+                    <div class="analytics-card">
+                        <h3><i class="fas fa-chart-bar"></i> Overview</h3>
+                        <div class="analytics-stats" id="analyticsOverview">
+                            <!-- Overview stats will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3><i class="fas fa-fire"></i> Top Selling Items</h3>
+                        <div class="top-items" id="topItems">
+                            <!-- Top items will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="analytics-metrics">
+                    <div class="analytics-card">
+                        <h3><i class="fas fa-tachometer-alt"></i> Performance Metrics</h3>
+                        <div class="metrics-grid" id="performanceMetrics">
+                            <!-- Performance metrics will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="analytics-charts">
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-line"></i> Sales Trend (Last 30 Days)</h3>
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-pie"></i> Category Distribution</h3>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-bar"></i> Performance Indicators</h3>
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Info Section -->
+            <div id="databaseSection" class="section">
+                <div class="section-header">
+                    <h2>Database Information</h2>
+                    <p>View and manage your restaurant database</p>
+                </div>
+
+                <div class="database-info">
+                    <div class="info-card">
+                        <h3>Database Stats</h3>
+                        <div id="databaseStats">
+                            <!-- Database stats will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>All Items in Database</h3>
+                        <div class="database-table-container">
+                            <table class="database-table" id="databaseTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Category</th>
+                                        <th>Sales</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Database items will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Menu Item</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="itemForm" enctype="multipart/form-data">
+                <input type="hidden" id="itemId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Item Name *</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price ($) *</label>
+                        <input type="number" id="price" step="0.01" min="0" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="Appetizers">Appetizers</option>
+                            <option value="Main Course">Main Course</option>
+                            <option value="Desserts">Desserts</option>
+                            <option value="Beverages">Beverages</option>
+                            <option value="Salads">Salads</option>
+                            <option value="Soups">Soups</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="availability">Availability</label>
+                        <select id="availability">
+                            <option value="true">Available</option>
+                            <option value="false">Unavailable</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" rows="3" placeholder="Describe the menu item..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="image">Item Image</label>
+                    <div class="image-upload-container">
+                        <div class="image-preview" id="imagePreview">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload image</p>
+                        </div>
+                        <input type="file" id="image" accept="image/*" class="image-input">
+                    </div>
+                    <small>Supported formats: JPG, PNG, GIF, WEBP (Max: 16MB)</small>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
